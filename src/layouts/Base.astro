@@ -1,4 +1,7 @@
 ---
+import '../styles/global.css';
+import winboxScript from '../scripts/winbox-lite.js?url';
+
 const { title = 'Clarissa • Portfolio', description = 'Web Developer in San Antonio — Win98 desktop portfolio' } = Astro.props;
 ---
 <!doctype html>
@@ -9,8 +12,7 @@ const { title = 'Clarissa • Portfolio', description = 'Web Developer in San An
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="stylesheet" href="https://unpkg.com/98.css" />
-    <link rel="stylesheet" href="/src/styles/global.css" />
-    <script type="module" src="/src/scripts/winbox-lite.js" defer></script>
+    <script type="module" src={winboxScript} defer></script>
     <link rel="icon" href="/assets/favicon.ico" />
   </head>
   <body>
