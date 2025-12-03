@@ -1,16 +1,122 @@
 ---
-
+import Base from '../layouts/Base.astro';
+import Taskbar from '../components/Taskbar.astro';
 ---
+<Base title="Clarissa Flores | Web Developer">
+  <main class="desktop">
+    <a class="desktop-icon" data-hover-icon="/assets/icons/warning-inv.png" href="#" ondblclick="__openWindow('welcome')">
+      <img src="/assets/icons/warning.png" width="32" height="32" alt="Welcome" />
+      <span>Welcome</span>
+    </a>
+    <a class="desktop-icon" data-hover-icon="/assets/icons/user-2.png" href="#" ondblclick="__openWindow('about')">
+      <img src="/assets/icons/user.png" width="32" height="32" alt="About" />
+      <span>About</span>
+    </a>
+    <a class="desktop-icon" data-hover-icon="/assets/icons/folder-open.png" href="#" ondblclick="__openWindow('projects')">
+      <img src="/assets/icons/folder-closed.png" width="32" height="32" alt="Projects" />
+      <span>Projects</span>
+    </a>
+    <a class="desktop-icon" data-hover-icon="/assets/icons/document-2.png" href="/assets/Clarissa-Flores_Wordpress-Developer.pdf" target="_blank" rel="noreferrer">
+      <img src="/assets/icons/document.png" width="32" height="32" alt="Resume PDF" />
+      <span>Resume</span>
+    </a>
+    <a class="desktop-icon" data-hover-icon="/assets/icons/mail-2.png" href="#" ondblclick="__openWindow('contact')">
+      <img src="/assets/icons/mail.png" width="32" height="32" alt="Contact" />
+      <span>Contact</span>
+    </a>
+    <a class="desktop-icon" data-hover-icon="/assets/icons/help.png" href="#" ondblclick="__openWindow('colophon')">
+      <img src="/assets/icons/help.png" width="32" height="32" alt="Colophon" />
+      <span>Colophon</span>
+    </a>
+        <a class="desktop-icon" data-hover-icon="/assets/icons/bin-empty.png" href="#" ondblclick="__openWindow('bin')">
+      <img src="/assets/icons/bin.png" width="32" height="32" alt="Recycle Bin" />
+      <span>Recycle Bin</span>
+    </a>
+    <Taskbar />
+  </main>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+  <script is:inline>
+const WINDOWS = {
+  about: {
+    title: 'About Clarissa',
+    url: '/about',
+    x: 120,
+    y: 100,
+    icon: '/assets/icons/user.png'
+  },
+  projects: {
+    title: 'Projects',
+    url: '/projects',
+    x: 'center',
+    y: 'center',
+    icon: '/assets/icons/folder-closed.png'
+  },
+  contact: {
+    title: 'Contact',
+    url: '/contact',
+    x: 260,
+    y: 160,
+    icon: '/assets/icons/mail.png'
+  },
+  colophon: {
+    title: 'Colophon',
+    url: '/colophon',
+    x: 320,
+    y: 220,
+    icon: '/assets/icons/help.png'
+  },
+  welcome: {
+    title: 'Welcome',
+    url: '/welcome',
+    x: 'center',
+    y: 80,
+    icon: '/assets/icons/warning.png'
+  },
+    bin: {
+    title: 'Recycle Bin',
+    url: '/bin',
+    x: 'center',
+    y: 'center',
+    icon: '/assets/icons/bin.png'
+  }
+};
+
+window.__openWindow = (key) => {
+  const cfg = WINDOWS[key];
+  if (!cfg || !window.WinBox) return;
+  const existing = document.querySelector(`[data-win-id="${key}"]`);
+  if (existing?.winbox) { existing.winbox.focus(); return; }
+
+  const wb = new WinBox(cfg.title, {
+    id: key,
+    class: ['modern', 'no-max'],
+    url: cfg.url,
+    icon: cfg.icon,
+    fitContent: true,
+    onclose() {
+      document.dispatchEvent(new CustomEvent('winbox:closed', { detail: { key } }));
+    }
+  });
+  wb.body.setAttribute('data-win-id', key);
+  document.dispatchEvent(new CustomEvent('winbox:opened', {
+    detail: { key, title: cfg.title, icon: cfg.icon, win: wb }
+  }));
+};
+
+// swap desktop icon images on hover/focus if data-hover-icon is provided
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.desktop-icon').forEach((icon) => {
+    const img = icon.querySelector('img');
+    const hoverSrc = icon.dataset.hoverIcon;
+    if (!img || !hoverSrc) return;
+    const baseSrc = img.getAttribute('src');
+    const applyHover = () => img.setAttribute('src', hoverSrc);
+    const removeHover = () => img.setAttribute('src', baseSrc);
+    icon.addEventListener('mouseenter', applyHover);
+    icon.addEventListener('mouseleave', removeHover);
+    icon.addEventListener('focus', applyHover);
+    icon.addEventListener('blur', removeHover);
+  });
+});
+  </script>
+</Base>

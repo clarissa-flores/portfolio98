@@ -1,0 +1,170 @@
+---
+/** Build an inline onclick string that will call the global helper */
+const openWindow = (key: string) =>
+  `window.__openWindow && window.__openWindow('${key}')`;
+---
+
+<div class="taskbar">
+  <button class="start-button" type="button" data-start-toggle aria-expanded="false" aria-controls="start-menu">
+    <img class="start-icon" src="/assets/icons/windows.png" alt="" width="20" height="20" />
+    Start
+  </button>
+
+  <div class="task-buttons">
+    <div data-task-buttons></div>
+  </div>
+
+  <div class="tray">
+    <div class="tray-divider" aria-hidden="true"></div>
+    <button class="tray-icon-button" type="button" data-tray-close title="Close all windows">
+      <img src="/assets/icons/computer.png" alt="" width="16" height="16" />
+    </button>
+    <div class="tray-clock" data-clock title="Local time"></div>
+  </div>
+
+  <div class="start-menu" id="start-menu" data-start-menu hidden>
+    <div class="start-menu-header">Clarissa Flores</div>
+    <div class="start-menu-list" role="menu" aria-label="Start menu">
+      <button class="start-menu-item" type="button" data-start-action="about" role="menuitem">
+        <img src="/assets/icons/user.png" alt="" width="16" height="16" />
+        <span>About</span>
+      </button>
+      <button class="start-menu-item" type="button" data-start-action="projects" role="menuitem">
+        <img src="/assets/icons/folder-closed.png" alt="" width="16" height="16" />
+        <span>Projects</span>
+      </button>
+      <button class="start-menu-item" type="button" data-start-action="contact" role="menuitem">
+        <img src="/assets/icons/mail.png" alt="" width="16" height="16" />
+        <span>Contact</span>
+      </button>
+      <div class="start-menu-divider" role="separator"></div>
+      <button class="start-menu-item" type="button" data-start-action="close-all" role="menuitem">
+        <img src="/assets/icons/computer.png" alt="" width="16" height="16" />
+        <span>Close All Windows</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const toggle = document.querySelector('[data-start-toggle]');
+    const menu = document.querySelector('[data-start-menu]');
+    const taskButtons = document.querySelector('[data-task-buttons]');
+    if (!toggle || !menu || !taskButtons) return;
+
+    let isOpen = false;
+
+    const syncState = () => {
+      menu.hidden = !isOpen;
+      toggle.setAttribute('aria-expanded', String(isOpen));
+    };
+
+    const closeAll = () => {
+      document.querySelectorAll('.winbox-lite').forEach((el) => {
+        const key = el.dataset.winId;
+        el.remove();
+        if (key) {
+          document.dispatchEvent(new CustomEvent('winbox:closed', { detail: { key } }));
+        }
+      });
+    };
+
+    // Ensure hidden on load
+    isOpen = false;
+    syncState();
+
+    const buttonMap = new Map();
+
+    const createTaskButton = ({ key, title, icon, win }) => {
+      if (buttonMap.has(key)) {
+        const existing = buttonMap.get(key);
+        existing.winRef = win;
+        return existing.el;
+      }
+      const btn = document.createElement('button');
+      btn.className = 'task-button';
+      btn.type = 'button';
+      btn.dataset.winId = key;
+      btn.innerHTML = `
+        <img src="${icon || '/assets/icons/windows.png'}" alt="" width="16" height="16" />
+        <span>${title}</span>
+      `;
+      btn.addEventListener('click', () => {
+        if (btn.winRef && typeof btn.winRef.focus === 'function') {
+          btn.winRef.focus();
+        } else if (window.__openWindow) {
+          window.__openWindow(key);
+        }
+      });
+      btn.winRef = win;
+      buttonMap.set(key, { el: btn, winRef: win });
+      taskButtons.appendChild(btn);
+      return btn;
+    };
+
+    const removeTaskButton = (key) => {
+      const entry = buttonMap.get(key);
+      if (!entry) return;
+      entry.el.remove();
+      buttonMap.delete(key);
+    };
+
+    toggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      isOpen = !isOpen;
+      syncState();
+    });
+
+    menu.addEventListener('click', (event) => {
+      event.stopPropagation();
+    });
+
+    document.addEventListener('click', (event) => {
+      if (isOpen && !menu.contains(event.target) && !toggle.contains(event.target)) {
+        isOpen = false;
+        syncState();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && isOpen) {
+        isOpen = false;
+        syncState();
+      }
+    });
+
+    menu.querySelectorAll('[data-start-action]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.startAction;
+        isOpen = false;
+        syncState();
+        if (!action) return;
+        if (action === 'close-all') {
+          closeAll();
+          return;
+        }
+        if (window.__openWindow) {
+          window.__openWindow(action);
+        }
+      });
+    });
+
+    document.addEventListener('winbox:opened', (event) => {
+      const detail = event.detail || {};
+      if (!detail.key) return;
+      createTaskButton(detail);
+    });
+
+    document.addEventListener('winbox:closed', (event) => {
+      const detail = event.detail || {};
+      if (!detail.key) return;
+      removeTaskButton(detail.key);
+    });
+
+    const trayClose = document.querySelector('[data-tray-close]');
+    if (trayClose) {
+      trayClose.addEventListener('click', () => closeAll());
+    }
+  })();
+</script>

@@ -1,0 +1,77 @@
+---
+interface Project {
+  title: string;
+  summary: string;
+  link?: string;
+  role?: string;
+  stack?: string;
+  github?: string;
+  image?: string;
+}
+
+const projects: Project[] = [
+  {
+    title: 'Mercury Status',
+    summary: 'Check the status of mercury retrograde.',
+    stack: 'HTML, CSS, Bootstrap, JavaScript',
+    link: 'https://clarissa-flores.github.io/mercury-status/',
+    github: 'https://github.com/clarissa-flores/mercury-status',
+    image: '/assets/projects/mercury.png'
+  },
+  {
+    title: 'Modern Eye',
+    summary: 'Responsive WordPress site built with Elementor; collaborated closely with the client to align branding and business goals.',
+    stack: 'WordPress, Elementor, JavaScript, jQuery',
+    link: 'https://moderneyetx.com',
+    image: '/assets/projects/moderneye.png'
+  },
+  {
+    title: 'Summit GA',
+    summary: 'Custom WordPress site plus logo and visual branding for Summit Government Affairs; responsive and mobile-friendly.',
+    stack: 'WordPress, Elementor, JavaScript, jQuery',
+    link: 'https://summitgovernmentaffairs.com',
+    image: '/assets/projects/summit.png'
+  },
+  {
+    title: 'TinDog',
+    summary: 'A responsive landing page built with HTML, CSS, and Bootstrap 5.',
+    stack: 'HTML, CSS, Bootstrap',
+    link: 'https://clarissa-flores.github.io/TinDog/',
+    github: 'https://github.com/clarissa-flores/TinDog',
+    image: '/assets/projects/tindog.png'
+  }
+];
+---
+
+<section class="window-body">
+  <h1>Projects</h1>
+
+  <div class="project-grid">
+    {projects.map((project) => {
+      const imgSrc = project.image ?? '/assets/icons/folder-closed.png';
+      return (
+        <article class="project-tile">
+          <div class="project-icon">
+            <img src={imgSrc} alt={`${project.title} preview`} />
+          </div>
+          <div class="project-meta">
+            <h2>{project.title}</h2>
+            <p class="project-summary">{project.summary}</p>
+            {project.stack && <p class="project-stack">{project.stack}</p>}
+            <p class="project-links">
+              {project.link && (
+                <a href={project.link} target="_blank" rel="noreferrer">View</a>
+              )}
+              {project.github && (
+                <>
+                  {project.link && ' · '}
+                  <a href={project.github} target="_blank" rel="noreferrer">GitHub</a>
+                </>
+              )}
+            </p>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+</section>
