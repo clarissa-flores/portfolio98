@@ -131,7 +131,7 @@ class WinBoxLite {
     this.focus();
 
     const clampToViewport = () => {
-      const margin = 16;
+      const margin = window.innerWidth < 640 ? 10 : 16;
       const taskbar = document.querySelector('.taskbar');
       const taskbarHeight = taskbar ? taskbar.offsetHeight : 0;
       const maxWidth = Math.max(window.innerWidth - margin * 2, 200);
@@ -149,7 +149,7 @@ class WinBoxLite {
 
     const maybeFit = () => {
       if (!this.fitContent || this.isMaximized || this.isMinimized) return;
-      const margin = 32;
+      const margin = window.innerWidth < 640 ? 12 : 32;
       const taskbar = document.querySelector('.taskbar');
       const taskbarHeight = taskbar ? taskbar.offsetHeight : 0;
       const bodyRect = this.body.getBoundingClientRect();

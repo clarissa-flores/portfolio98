@@ -1,0 +1,29 @@
+<section class="window-body" data-settings>
+  <h1>Settings</h1>
+  <p>Tweak the desktop appearance. Changes are temporary (no storage).</p>
+
+  <div class="project-list">
+    <article class="project-card">
+      <h2>Wallpaper</h2>
+      <label>
+        <span>Background</span><br />
+        <select data-setting="wallpaper">
+          <option value="url('/assets/clouds.jpeg')" selected>Clouds</option>
+          <option value="none">Solid color only</option>
+        </select>
+      </label>
+    </article>
+
+    <article class="project-card">
+      <h2>Background Color</h2>
+      <label>
+        <span>Pick a color</span><br />
+        <input type="color" value="#008080" data-setting="bg-color" />
+      </label>
+    </article>
+  </div>
+
+  <p>
+    <button type="button" data-settings-reset>Reset to defaults</button>
+  </p>
+</section>

@@ -4,11 +4,11 @@ import Taskbar from '../components/Taskbar.astro';
 ---
 <Base title="Clarissa Flores | Web Developer">
   <main class="desktop">
-    <a class="desktop-icon" data-hover-icon="/assets/icons/warning-inv.png" href="#" ondblclick="__openWindow('welcome')">
+    <a class="desktop-icon" data-hover-icon="/assets/icons/warning.png" href="#" ondblclick="__openWindow('welcome')">
       <img src="/assets/icons/warning.png" width="32" height="32" alt="Welcome" />
       <span>Welcome</span>
     </a>
-    <a class="desktop-icon" data-hover-icon="/assets/icons/user-2.png" href="#" ondblclick="__openWindow('about')">
+    <a class="desktop-icon" data-hover-icon="/assets/icons/user.png" href="#" ondblclick="__openWindow('about')">
       <img src="/assets/icons/user.png" width="32" height="32" alt="About" />
       <span>About</span>
     </a>
@@ -16,19 +16,31 @@ import Taskbar from '../components/Taskbar.astro';
       <img src="/assets/icons/folder-closed.png" width="32" height="32" alt="Projects" />
       <span>Projects</span>
     </a>
-    <a class="desktop-icon" data-hover-icon="/assets/icons/document-2.png" href="/assets/Clarissa-Flores_Wordpress-Developer.pdf" target="_blank" rel="noreferrer">
+    <a class="desktop-icon" data-hover-icon="/assets/icons/document.png" href="/assets/Clarissa-Flores_Wordpress-Developer.pdf" target="_blank" rel="noreferrer">
       <img src="/assets/icons/document.png" width="32" height="32" alt="Resume PDF" />
       <span>Resume</span>
     </a>
-    <a class="desktop-icon" data-hover-icon="/assets/icons/mail-2.png" href="#" ondblclick="__openWindow('contact')">
+    <a class="desktop-icon" data-hover-icon="/assets/icons/mail.png" href="#" ondblclick="__openWindow('contact')">
       <img src="/assets/icons/mail.png" width="32" height="32" alt="Contact" />
       <span>Contact</span>
+    </a>
+    <a class="desktop-icon" data-hover-icon="/assets/icons/notepad-file.png" href="#" ondblclick="__openWindow('blog')">
+      <img src="/assets/icons/notepad.png" width="32" height="32" alt="Blog" />
+      <span>Blog</span>
+    </a>
+    <a class="desktop-icon" data-hover-icon="/assets/icons/console.png" href="#" ondblclick="__openWindow('console')">
+      <img src="/assets/icons/console.png" width="32" height="32" alt="Console" />
+      <span>Console</span>
+    </a>
+    <a class="desktop-icon" data-hover-icon="/assets/icons/monitor-gear.png" href="#" ondblclick="__openWindow('settings')">
+      <img src="/assets/icons/monitor-gear.png" width="32" height="32" alt="Settings" />
+      <span>Settings</span>
     </a>
     <a class="desktop-icon" data-hover-icon="/assets/icons/help.png" href="#" ondblclick="__openWindow('colophon')">
       <img src="/assets/icons/help.png" width="32" height="32" alt="Colophon" />
       <span>Colophon</span>
     </a>
-        <a class="desktop-icon" data-hover-icon="/assets/icons/bin-empty.png" href="#" ondblclick="__openWindow('bin')">
+    <a class="desktop-icon" data-hover-icon="/assets/icons/bin-empty.png" href="#" ondblclick="__openWindow('bin')">
       <img src="/assets/icons/bin.png" width="32" height="32" alt="Recycle Bin" />
       <span>Recycle Bin</span>
     </a>
@@ -65,6 +77,28 @@ const WINDOWS = {
     y: 220,
     icon: '/assets/icons/help.png'
   },
+  blog: {
+    title: 'Blog',
+    url: '/blog',
+    x: 200,
+    y: 140,
+    icon: '/assets/icons/notepad.png'
+  },
+  settings: {
+    title: 'Settings',
+    url: '/settings',
+    x: 180,
+    y: 120,
+    icon: '/assets/icons/monitor-gear.png'
+  },
+  console: {
+    title: 'Console',
+    url: '/console',
+    x: 'center',
+    y: 120,
+    icon: '/assets/icons/console.png',
+    maximize: true
+  },
   welcome: {
     title: 'Welcome',
     url: '/welcome',
@@ -82,22 +116,32 @@ const WINDOWS = {
 };
 
 window.__openWindow = (key) => {
+  window.__openWindows = window.__openWindows || {};
+  const openMap = window.__openWindows;
   const cfg = WINDOWS[key];
   if (!cfg || !window.WinBox) return;
-  const existing = document.querySelector(`[data-win-id="${key}"]`);
-  if (existing?.winbox) { existing.winbox.focus(); return; }
+  const existingWin = openMap[key];
+  if (existingWin && document.body.contains(existingWin.el)) {
+    existingWin.focus();
+    return;
+  }
 
   const wb = new WinBox(cfg.title, {
     id: key,
-    class: ['modern', 'no-max'],
+    class: ['modern', 'no-max', key === 'console' ? 'console-win' : null].filter(Boolean),
     url: cfg.url,
     icon: cfg.icon,
     fitContent: true,
     onclose() {
+      delete openMap[key];
       document.dispatchEvent(new CustomEvent('winbox:closed', { detail: { key } }));
     }
   });
   wb.body.setAttribute('data-win-id', key);
+  openMap[key] = wb;
+  if (cfg.maximize) {
+    wb.maximize();
+  }
   document.dispatchEvent(new CustomEvent('winbox:opened', {
     detail: { key, title: cfg.title, icon: cfg.icon, win: wb }
   }));
@@ -116,6 +160,179 @@ document.addEventListener('DOMContentLoaded', () => {
     icon.addEventListener('mouseleave', removeHover);
     icon.addEventListener('focus', applyHover);
     icon.addEventListener('blur', removeHover);
+  });
+
+  const openFileWindow = (name, src) => {
+    if (!window.WinBox) return;
+    const winId = `file-${name}`;
+    const existing = document.querySelector(`[data-win-id="${winId}"]`);
+    if (existing?.winbox) { existing.winbox.focus(); return; }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'window-body';
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = name;
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    wrapper.appendChild(img);
+
+    const wb = new WinBox(name, {
+      id: winId,
+      class: ['modern', 'no-max'],
+      mount: wrapper,
+      width: 360,
+      height: 360,
+      icon: '/assets/icons/bin.png',
+      onclose() {
+        document.dispatchEvent(new CustomEvent('winbox:closed', { detail: { key: winId } }));
+      }
+    });
+    wb.body.setAttribute('data-win-id', winId);
+    document.dispatchEvent(new CustomEvent('winbox:opened', {
+      detail: { key: winId, title: name, icon: '/assets/icons/bin.png', win: wb }
+    }));
+  };
+
+  document.addEventListener('click', (event) => {
+    const target = event.target.closest('[data-file-src]');
+    if (!target) return;
+    event.preventDefault();
+    openFileWindow(target.dataset.fileName, target.dataset.fileSrc);
+  });
+
+  // Open blog posts in WinBox windows
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('[data-blog-slug]');
+    if (!link) return;
+    event.preventDefault();
+    const slug = link.dataset.blogSlug;
+    const title = link.dataset.blogTitle || 'Blog';
+    const key = `blog-${slug}`;
+    WINDOWS[key] = WINDOWS[key] || {
+      title,
+      url: `/blog/${slug}`,
+      x: 'center',
+      y: 'center',
+      icon: '/assets/icons/notepad.png',
+      maximize: true
+    };
+    window.__openWindow(key);
+  });
+
+  const SETTINGS_DEFAULTS = {
+    wallpaper: "url('/assets/clouds.jpeg')",
+    bgColor: '#008080'
+  };
+
+  const applySetting = (key, value) => {
+    const root = document.documentElement.style;
+    switch (key) {
+      case 'wallpaper':
+        root.setProperty('--wallpaper', value);
+        break;
+      case 'bg-color':
+        root.setProperty('--bg-color', value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const initSettingsWindow = (win) => {
+    const attempt = () => {
+      const panel = win?.body?.querySelector('[data-settings]');
+      if (!panel) {
+        setTimeout(attempt, 30);
+        return;
+      }
+
+      const wallpaperSelect = panel.querySelector('[data-setting="wallpaper"]');
+      const bgColorInput = panel.querySelector('[data-setting="bg-color"]');
+      const resetBtn = panel.querySelector('[data-settings-reset]');
+
+      if (wallpaperSelect) {
+        wallpaperSelect.addEventListener('change', () => applySetting('wallpaper', wallpaperSelect.value));
+      }
+      if (bgColorInput) {
+        bgColorInput.addEventListener('input', () => applySetting('bg-color', bgColorInput.value));
+      }
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          applySetting('wallpaper', SETTINGS_DEFAULTS.wallpaper);
+          applySetting('bg-color', SETTINGS_DEFAULTS.bgColor);
+          if (wallpaperSelect) wallpaperSelect.value = SETTINGS_DEFAULTS.wallpaper;
+          if (bgColorInput) bgColorInput.value = SETTINGS_DEFAULTS.bgColor;
+        });
+      }
+    };
+    attempt();
+  };
+
+  const initConsoleWindow = (win) => {
+    const commands = {
+      help: 'Available commands: help, about, skills, contact, bunny, hazel, dodgers, clear',
+      about: 'Clarissa Flores — full-stack developer in San Antonio, TX building fast, accessible, and visually thoughtful websites. Lover of cozy corners, clean code, and coffee. Proud parent to Bunny the cat, Hazel the dog, and too many plants.',
+      skills: 'Languages: JavaScript, TypeScript, PHP, HTML, CSS. Frameworks: Astro, React, Node. CMS: WordPress, Elementor, JetEngine, ACF. Specialties: Performance, SEO, Accessibility, CRO, UI polish. Secret Skills: writing docs, creating client guides, organizing projects, and restructuring content.',
+      contact: 'Email: contact@clarissaflores.me',
+      bunny: 'Bunny is currently: [ ████░░░░░░ ] 47% awake. Status: plotting world domination, seeking treats, demanding scratches.',
+      hazel: 'Hazel System Log: [✔] Tail wag detected [✔] Soft snores activated [✔] Human proximity confirmed System status: Warm, safe, content <3',
+      dodgers: 'Go Dodgers, our back to back World Series Champs!'
+    };
+
+    const write = (outputEl, text) => {
+      const line = document.createElement('p');
+      line.textContent = text;
+      outputEl.appendChild(line);
+      requestAnimationFrame(() => {
+        outputEl.scrollTop = outputEl.scrollHeight;
+      });
+    };
+
+    const setup = () => {
+      const shell = win?.body?.querySelector('[data-console]');
+      if (!shell) {
+        setTimeout(setup, 30);
+        return;
+      }
+      const output = shell.querySelector('.console-output');
+      const form = shell.querySelector('.console-input-row');
+      const input = form?.querySelector('input');
+      if (!output || !form || !input) return;
+
+      write(output, 'Welcome to the console.');
+      write(output, commands.help);
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const cmd = input.value.trim().toLowerCase();
+        if (!cmd) return;
+        write(output, `> ${cmd}`);
+        if (cmd === 'clear') {
+          output.innerHTML = '';
+          requestAnimationFrame(() => {
+            output.scrollTop = output.scrollHeight;
+          });
+        } else {
+          write(output, commands[cmd] ?? 'Unknown command. Type "help".');
+        }
+        input.value = '';
+        input.focus();
+      });
+
+      input.focus();
+    };
+    setup();
+  };
+
+  document.addEventListener('winbox:opened', (event) => {
+    const detail = event.detail || {};
+    if (detail.key === 'settings' && detail.win) {
+      initSettingsWindow(detail.win);
+    }
+    if (detail.key === 'console' && detail.win) {
+      initConsoleWindow(detail.win);
+    }
   });
 });
   </script>

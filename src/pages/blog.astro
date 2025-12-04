@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+const posts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<section class="window-body">
+  <h1>Blog</h1>
+  <p>A simple place for notes.</p>
+
+  <div class="project-list">
+    {posts.map((post) => (
+      <article class="project-card">
+        <h2>
+          <a
+            href={`/blog/${post.slug}`}
+            data-blog-slug={post.slug}
+            data-blog-title={post.data.title}
+          >
+            {post.data.title}
+          </a>
+        </h2>
+        {post.data.date && <p class="project-stack">{formatDate(post.data.date)}</p>}
+        <p>{post.data.summary}</p>
+        <p>
+          <a
+            href={`/blog/${post.slug}`}
+            data-blog-slug={post.slug}
+            data-blog-title={post.data.title}
+          >
+            Read more
+          </a>
+        </p>
+      </article>
+    ))}
+  </div>
+</section>

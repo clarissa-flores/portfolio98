@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts
+    .filter((post) => !post.data.draft)
+    .map((post) => ({
+      params: { slug: post.slug },
+      props: { post }
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+---
+
+<section class="window-body">
+  <h1>{post.data.title}</h1>
+  {post.data.date && <p class="project-stack">{formatDate(post.data.date)}</p>}
+  <Content />
+</section>

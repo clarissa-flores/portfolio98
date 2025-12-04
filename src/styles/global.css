@@ -1,17 +1,35 @@
 :root {
   --wallpaper: url('/assets/clouds.jpeg');
+  --bg-color: #008080;
   --taskbar-height: 40px;
 }
 
 html, body { height: 100%; overflow: hidden; }
 body {
   margin: 0;
-  background: #008080 var(--wallpaper) center/cover fixed no-repeat;
+  background: var(--bg-color) var(--wallpaper) center/cover fixed no-repeat;
 }
 
-.desktop { min-height: 100vh; padding-bottom: var(--taskbar-height); position: relative; }
-.desktop-icon { width: 100px; text-align: center; color: #fff; text-shadow: 0 1px 0 #000; margin: 18px; user-select: none; }
-.desktop-icon img { display: block; margin: 0 auto 6px; width: 48px; height: 48px; }
+.desktop {
+  height: calc(100vh - var(--taskbar-height));
+  padding: 16px 16px calc(var(--taskbar-height) + 32px);
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 12px;
+  justify-content: start;
+  justify-items: center;
+  align-content: start;
+  align-items: start;
+  overflow: auto;
+  scrollbar-width: none;
+}
+.desktop::-webkit-scrollbar { display: none; }
+.desktop-icon { width: clamp(72px, 18vw, 100px); text-align: center; color: #fff; text-shadow: 0 1px 0 #000; margin: 0; user-select: none; }
+.desktop-icon img { display: block; margin: 0 auto 6px; width: clamp(36px, 9vw, 48px); height: clamp(36px, 9vw, 48px); }
 .desktop-icon:focus-visible { outline: 2px dotted #fff; }
 
 .taskbar {
@@ -122,10 +140,6 @@ body {
   box-shadow: 1px 0 0 #fdfdfd;
 }
 
-.tray-icon {
-  font-size: 1.1rem;
-}
-
 .tray-clock {
   padding: 2px 10px;
   background: #e5e5e5;
@@ -149,6 +163,8 @@ body {
   display: flex;
   flex-direction: column;
   z-index: 10000;
+  max-height: calc(100vh - var(--taskbar-height) - 12px);
+  overflow: auto;
 }
 
 [data-start-menu][hidden] {
@@ -206,10 +222,16 @@ body {
 }
 
 @media (max-width: 640px) {
-  .desktop { padding: 8px 8px var(--taskbar-height); flex-direction: row; flex-wrap: wrap; gap: 12px; }
+  .desktop {
+    padding: 8px 8px var(--taskbar-height);
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    max-width: none;
+    margin: 0;
+    gap: 10px;
+  }
   .desktop-icon { width: 84px; margin: 0; }
   .desktop-icon img { width: 40px; height: 40px; }
-  .task-buttons { flex-wrap: wrap; gap: 4px; }
+  .task-buttons { flex-wrap: wrap; gap: 4px; overflow-x: auto; white-space: nowrap; }
   .task-button { min-width: 44px; width: 44px; height: 26px; padding: 3px; justify-content: center; }
   .task-button span { display: none; }
   .taskbar { flex-wrap: wrap; height: auto; }
@@ -235,15 +257,19 @@ body {
 .desktop-icon:hover {
   background: rgba(255,255,255,0.1);
   border-color: #fff;
+  transform: translate(2px, -2px);
+}
+.winbox-lite {
+  background-color: #FFF;
 }
 
-.desktop {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;   /* left-align the column */
-  gap: 18px;
-  padding: 16px 16px var(--taskbar-height);
-  flex-wrap: wrap;
+.winbox-lite.console-win,
+.winbox-lite.console-win .window-body {
+  background: #0c0c0c;
+  color: #0f0;
+}
+.winbox-lite.console-win > .window-body {
+  overflow: hidden;
 }
 
 .winbox-lite .title-bar {
@@ -303,6 +329,19 @@ body {
 .window-body img {
   max-width: 100%;
   height: auto;
+}
+
+.winbox-lite > .window-body {
+  max-height: calc(100vh - var(--taskbar-height) - 80px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 640px) {
+  .winbox-lite > .window-body {
+    max-height: calc(100vh - var(--taskbar-height) - 40px);
+  }
 }
 
 .project-list {
@@ -365,4 +404,89 @@ body {
 
 .project-links {
   margin: 0;
+}
+
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.file-tile {
+  border: 1px solid #c0c0c0;
+  background: #f3f3f3;
+  border-radius: 3px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.file-icon img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.12);
+}
+
+.file-name {
+  font-size: 12px;
+  text-align: center;
+  word-break: break-all;
+}
+
+.console-shell {
+  margin: 0;
+  padding: 0;
+  background: #0c0c0c;
+  color: #0f0;
+  border: 1px solid #2c2c2c;
+  font-family: 'Victor Mono', 'Courier New', monospace;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+.console-output {
+  flex: 1;
+  overflow: auto;
+  padding: 4px;
+}
+
+.console-output p {
+  margin: 0 0 4px;
+}
+
+.console-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.console-input-row input {
+  flex: 1;
+  background: #111;
+  color: #0f0;
+  border: 1px solid #444;
+  padding: 4px 6px;
+  font-family: inherit;
+}
+
+.console-input-row button {
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.console-prompt {
+  color: #6aff6a;
 }
