@@ -1,0 +1,36 @@
+---
+interface Props {
+  label: string;
+  icon: string;
+  hoverIcon?: string;
+  windowKey?: string;
+  href?: string;
+  target?: string;
+  rel?: string;
+  imgClass?: string;
+}
+
+const {
+  label,
+  icon,
+  hoverIcon,
+  windowKey,
+  href = '#',
+  target,
+  rel,
+  imgClass
+} = Astro.props;
+const dbl = windowKey ? `__openWindow('${windowKey}')` : undefined;
+---
+
+<a
+  class="desktop-icon"
+  href={href}
+  ondblclick={dbl}
+  data-hover-icon={hoverIcon}
+  target={target}
+  rel={rel}
+>
+  <img src={icon} width="32" height="32" alt={label} class={imgClass} />
+  <span>{label}</span>
+</a>

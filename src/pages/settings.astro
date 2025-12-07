@@ -1,6 +1,6 @@
 <section class="window-body" data-settings>
   <h1>Settings</h1>
-  <p>Tweak the desktop appearance. Changes are temporary (no storage).</p>
+  <p>Tweak the desktop appearance.</p>
 
   <div class="project-list">
     <article class="project-card">
@@ -8,8 +8,37 @@
       <label>
         <span>Background</span><br />
         <select data-setting="wallpaper">
-          <option value="url('/assets/clouds.jpeg')" selected>Clouds</option>
+          <option value="url('/assets/wallpapers/clouds.jpeg')" selected>Clouds</option>
+          <option value="url('/assets/wallpapers/bliss.jpg')">Bliss</option>
+          <option value="url('/assets/wallpapers/bunny.jpg')">Bunny</option>
+          <option value="url('/assets/wallpapers/hazel.jpg')">Hazel</option>
+          <option value="url('/assets/wallpapers/riot.jpg')">Paramore - Riot!</option>
+          <option value="url('/assets/wallpapers/bedroomwall.JPG')">Bedroom Wall</option>
           <option value="none">Solid color only</option>
+        </select>
+      </label>
+      <span class="setting-help" data-wallpaper-help>Clouds — classic Win98 sky.</span><br>
+      <label>
+       <span>Display style</span><br />
+      <select data-setting="wallpaper-mode">
+        <option value="cover" selected>Fill screen (cover)</option>
+        <option value="contain">Fit image (contain)</option>
+        <option value="tile">Tile</option>
+        <option value="stretch">Stretch</option>
+      </select>
+      </label><br>
+      <label>
+        <span>Position</span><br />
+        <select data-setting="wallpaper-position">
+          <option value="center" selected>Center</option>
+          <option value="top left">Top Left</option>
+          <option value="top center">Top Center</option>
+          <option value="top right">Top Right</option>
+          <option value="center left">Center Left</option>
+          <option value="center right">Center Right</option>
+          <option value="bottom left">Bottom Left</option>
+          <option value="bottom center">Bottom Center</option>
+          <option value="bottom right">Bottom Right</option>
         </select>
       </label>
     </article>
@@ -21,9 +50,32 @@
         <input type="color" value="#008080" data-setting="bg-color" />
       </label>
     </article>
+
+    <article class="project-card">
+      <h2>Cursor</h2>
+      <label>
+        <span>Select a cursor style</span><br />
+        <select data-setting="cursor">
+          <option value="auto" selected>Default</option>
+          <option value="url('/assets/cursors/windows98.cur') 0 0, auto">Windows 98 Cursor</option>
+          <option value="url('/assets/cursors/rainbow.cur') 0 0, auto">Rainbow Cursor</option>
+          <option value="url('/assets/cursors/cat.cur') 0 0, auto">Cute Cat Paw Cursor</option>
+          <option value="url('/assets/cursors/pikachu.cur') 0 0, auto">Pikachu Cursor</option>
+        </select>
+      </label>
+    </article>
+
+    <article class="project-card">
+      <h2>Desktop Buddy</h2>
+      <label>
+        <input type="checkbox" id="neko-cat" data-setting="neko" />
+        <label for="neko-cat">Show Neko cat</label>
+      </label>
+    </article>
   </div>
 
   <p>
+    <button type="button" data-settings-save>Save changes</button>
     <button type="button" data-settings-reset>Reset to defaults</button>
   </p>
 </section>

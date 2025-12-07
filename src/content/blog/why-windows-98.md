@@ -46,24 +46,6 @@ It was pure joy. Pure curiosity.
 
 This redesign became my way of reconnecting with that girl — the one who was curious, playful, messy, excited, and stubborn enough to teach herself how the internet worked just because.
 
-<h2>Why Windows 98?</h2>
-
-Windows 98 is more than a nostalgic UI — it represents the beginning of an era of exploration for so many millennials. For me, it represents:
-
-🖥️ Discovery
-The first time I learned how computers think.
-
-🎨 Customization
-The joy of changing wallpapers, dragging icons, and making things feel personal.
-
-💡 Creativity Without Rules
-Before design systems, before style guides, before “best practices,” there was just “What happens if I try this?”
-
-🤓 The Start of My Coding Story
-My first HTML lines lived in Notepad. My first CSS experiments were… chaotic. But they were mine.
-
-Bringing that visual style into my modern portfolio allowed me to bridge who I am today — a professional developer — with the kid who fell in love with making things on a screen.
-
 <h2>A Portfolio That Feels Like Me Again</h2>
 
 I didn’t want another minimalist portfolio with a hero section and a grid of projects.

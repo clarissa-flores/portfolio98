@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OS-GUI Desktop Prototype</title>
+    <link rel="stylesheet" href="/os-gui/windows-98.css" />
+    <link rel="stylesheet" href="/os-gui/layout.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 1.5rem;
+        background: #2f6ec4;
+        font-family: Arial, sans-serif;
+      }
+      .desk {
+        max-width: 1100px;
+        margin: 0 auto;
+        background: #1c4d8f;
+        border: 2px solid #0d2b57;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+        padding: 1rem;
+        color: #fff;
+      }
+      .panel {
+        background: #fff;
+        color: #111;
+        border: 1px solid #999;
+        padding: 1rem;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin: 1rem 0;
+      }
+      button {
+        padding: 0.5rem 0.9rem;
+        border: 1px solid #888;
+        background: #efefef;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      #osgui-host {
+        position: relative;
+        min-height: 420px;
+        background: #0f356b;
+        border: 1px dashed #b3d1ff;
+        padding: 0.5rem;
+        overflow: hidden;
+      }
+      .hint {
+        margin: 0.5rem 0 0;
+        color: #d2e5ff;
+        font-size: 0.95rem;
+      }
+    </style>
+    <script is:inline src="/os-gui/jquery.min.js"></script>
+    <script is:inline src="/os-gui/MenuBar.js"></script>
+    <script is:inline src="/os-gui/$Window.js"></script>
+  </head>
+  <body>
+    <div class="desk">
+      <div class="panel">
+        <h1 style="margin-top:0;">OS-GUI Prototype (Side-by-Side)</h1>
+        <p>This page uses <code>os-gui</code> windows without touching your main WinBox/98.css setup. Use it to see how swapping might feel.</p>
+        <div class="actions">
+          <button type="button" data-osgui="about">Open About</button>
+          <button type="button" data-osgui="projects">Open Projects</button>
+          <button type="button" data-osgui="modal">Open Modal</button>
+          <button type="button" data-osgui="reset">Close All</button>
+        </div>
+        <p class="hint">Windows render inside the blue area below.</p>
+      </div>
+      <div id="osgui-host">
+        <p style="margin:0;color:#d2e5ff;">os-gui windows will render here.</p>
+      </div>
+    </div>
+
+    <script is:inline>
+      (() => {
+        if (typeof window.$Window !== 'function' || !window.jQuery) {
+          console.error('os-gui scripts failed to load locally');
+          return;
+        }
+
+        const host = document.getElementById('osgui-host');
+        const buttons = document.querySelectorAll('[data-osgui]');
+        const openWindows = new Set();
+
+        const closeAll = () => {
+          openWindows.forEach(($w) => {
+            if ($w && typeof $w.close === 'function') $w.close();
+          });
+          openWindows.clear();
+        };
+
+        const spawn = async (type) => {
+          let title = 'Window';
+          let content = '<p>Demo content.</p>';
+          let options = { resizable: true };
+
+          if (type === 'about') {
+            title = 'About (fetched)';
+            try {
+              const res = await fetch('/about');
+              const html = await res.text();
+              content = html;
+            } catch {
+              content = '<p>Failed to load /about.</p>';
+            }
+          } else if (type === 'projects') {
+            title = 'Projects';
+            content = '<ul><li>Project 1</li><li>Project 2</li><li>Project 3</li></ul>';
+          } else if (type === 'modal') {
+            title = 'Modal';
+            options.modal = true;
+            options.resizable = false;
+            content = '<p>This is a modal-style window.</p>';
+          }
+
+          const $w = $Window({
+            title,
+            resizable: options.resizable !== false,
+            modal: Boolean(options.modal)
+          });
+          const $content = jQuery('<div style="padding:8px;"></div>');
+          $content.html(content);
+          $w.$content.empty().append($content);
+          $w.center();
+          openWindows.add($w);
+          $w.onClosed = () => openWindows.delete($w);
+        };
+
+        buttons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const action = btn.dataset.osgui;
+            if (action === 'reset') {
+              closeAll();
+              return;
+            }
+            spawn(action);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
