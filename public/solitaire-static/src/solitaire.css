@@ -41,7 +41,7 @@ body,
 .card {
     width: var(--card-width);
     height: var(--card-height);
-    background-image: url("/solitaire/src/spritesheet.png");
+    background-image: url("./spritesheet.png");
     position: absolute;
     left: 0;
     top: 0;

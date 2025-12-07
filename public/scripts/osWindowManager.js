@@ -57,7 +57,7 @@ export const OS_WINDOWS = {
   },
   solitaire: {
     title: 'Solitaire',
-    url: '/solitaire/index.html',
+    url: '/solitaire-static/index.html',
     icon: '/assets/icons/solitaire.png',
     width: 900,
     height: 720,
