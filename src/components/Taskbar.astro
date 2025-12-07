@@ -10,11 +10,14 @@
 
   <div class="tray">
     <div class="tray-divider" aria-hidden="true"></div>
+    <button class="tray-icon-button" type="button" data-sound-toggle aria-pressed="false" title="Toggle sound">
+      <img data-sound-icon src="/assets/icons/loudspeaker.png" alt="Sound" width="16" height="16" />
+    </button>
     <button class="tray-icon-button" type="button" data-tray-show title="Show desktop">
-      <img src="/assets/icons/windows.png" alt="" width="16" height="16" />
+      <img src="/assets/icons/desktop.png" alt="" width="16" height="16" />
     </button>
     <button class="tray-icon-button" type="button" data-tray-close title="Close all windows">
-      <img src="/assets/icons/computer.png" alt="" width="16" height="16" />
+      <img src="/assets/icons/error.png" alt="" width="16" height="16" />
     </button>
     <div class="tray-clock" data-clock title="Local time"></div>
   </div>
@@ -36,8 +39,13 @@
       </button>
       <div class="start-menu-divider" role="separator"></div>
       <button class="start-menu-item" type="button" data-start-action="close-all" role="menuitem">
-        <img src="/assets/icons/computer.png" alt="" width="16" height="16" />
+        <img src="/assets/icons/error.png" alt="" width="16" height="16" />
         <span>Close All Windows</span>
+      </button>
+      <div class="start-menu-divider" role="separator"></div>
+      <button class="start-menu-item" type="button" data-start-action="restart" role="menuitem">
+        <img src="/assets/icons/monitor-black.png" alt="" width="16" height="16" />
+        <span>Log Off / Restart</span>
       </button>
     </div>
   </div>

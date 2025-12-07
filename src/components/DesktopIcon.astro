@@ -8,6 +8,7 @@ interface Props {
   target?: string;
   rel?: string;
   imgClass?: string;
+  sound?: string;
 }
 
 const {
@@ -18,7 +19,8 @@ const {
   href = '#',
   target,
   rel,
-  imgClass
+  imgClass,
+  sound
 } = Astro.props;
 const dbl = windowKey ? `__openWindow('${windowKey}')` : undefined;
 ---
@@ -28,6 +30,7 @@ const dbl = windowKey ? `__openWindow('${windowKey}')` : undefined;
   href={href}
   ondblclick={dbl}
   data-hover-icon={hoverIcon}
+  data-sound={sound}
   target={target}
   rel={rel}
 >

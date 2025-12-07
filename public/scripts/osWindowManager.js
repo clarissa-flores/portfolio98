@@ -170,6 +170,9 @@ export function setupOSWindowManager(config) {
       resizable: cfg.resizable !== false,
       modal: cfg.modal === true
     });
+    if (cfg.modal && window.__sound?.play) {
+      window.__sound.play('chord', { allowQueue: true });
+    }
     if ($w?.element) {
       $w.element.classList.add('os-window');
       $w.element.dataset.winId = key;
@@ -252,6 +255,7 @@ export function setupOSWindowManager(config) {
         setContent(html);
       } catch (err) {
         setContent(`<p>Unable to load content (${err?.message || err}).</p>`);
+        window.__sound?.play?.('chord', { allowQueue: true });
       }
     }
 

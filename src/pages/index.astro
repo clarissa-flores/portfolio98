@@ -17,7 +17,7 @@ const ICONS = [
   { label: 'Hazel.exe', icon: '/assets/icons/hazel.png', windowKey: 'hazelWin', imgClass: 'custom-icon' },
   { label: 'Settings', icon: '/assets/icons/monitor-gear.png', windowKey: 'settings' },
   { label: 'Colophon', icon: '/assets/icons/help.png', windowKey: 'colophon' },
-  { label: 'Recycle Bin', icon: '/assets/icons/bin.png', hoverIcon: '/assets/icons/bin-empty.png', windowKey: 'bin' }
+  { label: 'Recycle Bin', icon: '/assets/icons/bin.png', hoverIcon: '/assets/icons/bin-empty.png', windowKey: 'bin', sound: 'recycle' }
 ];
 ---
 <Base title="Clarissa Flores | Web Developer">
@@ -102,6 +102,19 @@ const PET_IMAGES = {
     icon.addEventListener('focus', applyHover);
     icon.addEventListener('blur', removeHover);
   });
+
+  const bindDesktopIconSounds = () => {
+    document.querySelectorAll('.desktop-icon[data-sound]').forEach((icon) => {
+      const soundName = icon.dataset.sound;
+      if (!soundName) return;
+      const trigger = () => window.__sound?.play?.(soundName, { allowQueue: true });
+      icon.addEventListener('dblclick', trigger);
+      icon.addEventListener('keydown', (evt) => {
+        if (evt.key === 'Enter' || evt.key === ' ') trigger();
+      });
+    });
+  };
+  bindDesktopIconSounds();
 
   const openFileWindow = async (name, src, icon = '/assets/icons/bin.png') => {
     const osMod = await osGuiReady;

@@ -1,7 +1,7 @@
 const TRACKED_COMMANDS = ['about', 'skills', 'contact', 'bunny', 'hazel', 'dodgers', 'cleanse', 'manifest', 'coffee', 'ship'];
 
 const commands = {
-  help: 'Available commands: help, about, skills, contact, bunny, hazel, dodgers, cleanse, manifest, coffee, achievements, clear',
+  help: 'Available commands: help, about, skills, contact, bunny, hazel, dodgers, cleanse, manifest, coffee, ship, achievements, clear',
   about: 'Clarissa Flores — full-stack developer in San Antonio, TX building fast, accessible, and visually thoughtful websites. \nLover of cozy corners, clean code, and coffee. Proud parent to Bunny the cat, Hazel the dog, and too many plants.',
   skills: 'Languages: JavaScript, TypeScript, PHP, HTML, CSS. \nFrameworks: Astro, React, Node. \nCMS: WordPress, Elementor, JetEngine, ACF. \nSpecialties: Performance, SEO, Accessibility, CRO, UI polish. \nSecret Skills: writing docs, creating client guides, organizing projects, and restructuring content.',
   contact: 'Email: contact@clarissaflores.me',
@@ -63,20 +63,38 @@ const markCommand = (cmd) => {
   saveSet('console-commands', commandsSeen);
 };
 
+const ACHIEVEMENTS = [
+  { label: 'Cat Whisperer', check: (has) => has('bunny'), hint: 'Run "bunny" to visit Bunny.' },
+  { label: 'Dog Day', check: (has) => has('hazel'), hint: 'Run "hazel" to check on Hazel.' },
+  { label: 'Animal Lover', check: (has) => has('bunny') && has('hazel'), hint: 'Meet both Bunny and Hazel.' },
+  { label: 'True Blue', check: (has) => has('dodgers'), hint: 'Declare your Dodgers fandom with "dodgers".' },
+  { label: 'Code Exorcist', check: (has) => has('cleanse'), hint: 'Cleanse the bad vibes with "cleanse".' },
+  { label: 'Powered Up', check: (has) => has('coffee'), hint: 'Grab a cup with "coffee".' },
+  {
+    label: 'Wellness Wizard',
+    check: (has) => has('cleanse') && has('manifest') && has('coffee'),
+    hint: 'Complete the wellness trio: "cleanse", "manifest", and "coffee".'
+  },
+  {
+    label: 'Completionist',
+    check: (_has, missing) => missing.length === 0,
+    hint: (_has, missing) =>
+      missing.length ? `Discover every console command. Still missing: ${missing.join(', ')}` : 'You found every command!'
+  }
+];
+
 const renderAchievements = (output) => {
   const has = (cmd) => commandsSeen.has(cmd);
-  const allDone = TRACKED_COMMANDS.every(has);
-  const lines = [
-    'Achievements:',
-    `${has('bunny') ? '[✔]' : '[ ]'} Cat Whisperer`,
-    `${has('hazel') ? '[✔]' : '[ ]'} Dog Day`,
-    `${(has('bunny') && has('hazel')) ? '[✔]' : '[ ]'} Animal Lover`,
-    `${has('dodgers') ? '[✔]' : '[ ]'} True Blue`,
-    `${has('cleanse') ? '[✔]' : '[ ]'} Code Exorcist`,
-    `${has('coffee') ? '[✔]' : '[ ]'} Powered Up`,
-    `${(has('cleanse') && has('manifest') && has('coffee')) ? '[✔]' : '[ ]'} Wellness Wizard`,
-    `${allDone ? '[✔]' : '[ ]'} Completionist`
-  ];
+  const missingCommands = TRACKED_COMMANDS.filter((cmd) => !has(cmd));
+  const lines = ['Achievements:'];
+
+  ACHIEVEMENTS.forEach(({ label, check, hint }) => {
+    const done = check(has, missingCommands);
+    const hintText = typeof hint === 'function' ? hint(has, missingCommands) : hint;
+    lines.push(`${done ? '[✔]' : '[ ]'} ${label} — ${hintText}`);
+  });
+
+  lines.push(`Commands discovered: ${TRACKED_COMMANDS.length - missingCommands.length}/${TRACKED_COMMANDS.length}`);
   write(output, lines.join('\n'));
 };
 

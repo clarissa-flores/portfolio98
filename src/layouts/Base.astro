@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import BootScreen from '../components/BootScreen.astro';
 
 const { title = 'Clarissa Flores', description = '🚀 Web Developer in San Antonio | 90+ Sites Optimized for Speed, SEO, and Engagement ✨ Bridging Creativity and Functionality for Positive Impact' } = Astro.props;
 ---
@@ -11,9 +12,11 @@ const { title = 'Clarissa Flores', description = '🚀 Web Developer in San Anto
     <title>{title}</title>
     <meta name="description" content={description} />
     <!-- 98.css removed during os-gui migration -->
-    <link rel="icon" href="/assets/favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
+    <script type="module" src="/scripts/sound.js"></script>
   </head>
   <body>
+    <BootScreen />
     <slot />
     <script>
       window.addEventListener('DOMContentLoaded', () => {
@@ -23,5 +26,6 @@ const { title = 'Clarissa Flores', description = '🚀 Web Developer in San Anto
         setInterval(tick, 30000);
       });
     </script>
+    <script type="module" src="/scripts/boot.js"></script>
   </body>
 </html>

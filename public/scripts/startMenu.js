@@ -55,6 +55,21 @@
       buttonMap.forEach((_, key) => removeTaskButton(key));
     };
 
+    const restartSession = () => {
+      try {
+        localStorage.clear();
+      } catch {
+        /* ignore */
+      }
+      try {
+        sessionStorage?.clear?.();
+      } catch {
+        /* ignore */
+      }
+      closeAll();
+      window.location.reload();
+    };
+
     let desktopHidden = false;
     const setDesktopVisibility = (hide) => {
       desktopHidden = hide;
@@ -187,6 +202,10 @@
         if (!action) return;
         if (action === 'close-all') {
           closeAll();
+          return;
+        }
+        if (action === 'restart') {
+          restartSession();
           return;
         }
         if (window.__openWindow) {
