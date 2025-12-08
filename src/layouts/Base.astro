@@ -13,6 +13,9 @@ const { title = 'Clarissa Flores', description = '🚀 Web Developer in San Anto
     <meta name="description" content={description} />
     <!-- 98.css removed during os-gui migration -->
     <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/vendor/clippy/clippy.css" />
+    <script src="/vendor/clippy/jquery.min.js" defer data-clippy-jq></script>
+    <script src="/vendor/clippy/clippy.js" defer data-clippy-lib></script>
     <script type="module" src="/scripts/sound.js"></script>
   </head>
   <body>
@@ -27,5 +30,6 @@ const { title = 'Clarissa Flores', description = '🚀 Web Developer in San Anto
       });
     </script>
     <script type="module" src="/scripts/boot.js"></script>
+    <script type="module" src="/scripts/clippy.js"></script>
   </body>
 </html>

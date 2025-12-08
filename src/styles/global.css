@@ -154,6 +154,8 @@ select {
   opacity: 0;
   transition: opacity 250ms ease, visibility 250ms ease;
   visibility: hidden;
+  padding: clamp(12px, 4vw, 28px);
+  overflow: auto;
 }
 
 .boot-screen[data-active="true"] {
@@ -167,15 +169,20 @@ select {
 }
 
 .boot-card {
-  width: min(520px, 92vw);
+  width: clamp(260px, 92vw, 520px);
+  max-height: 90vh;
+  overflow: auto;
   background: #000;
   color: #6df78e;
   border: 2px solid #2aff7a;
   box-shadow: 0 0 18px rgba(0, 255, 128, 0.2), 0 0 2px rgba(0, 255, 128, 0.6);
-  padding: 18px;
+  padding: clamp(14px, 4vw, 20px);
   font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
   text-shadow: 0 0 4px rgba(0, 255, 128, 0.7);
   animation: crt-jitter 140ms steps(2, end) infinite;
+  display: grid;
+  gap: clamp(10px, 2vw, 14px);
+  align-content: start;
 }
 
 .boot-header {
@@ -185,33 +192,35 @@ select {
   margin-bottom: 12px;
   border-bottom: 1px solid #0f3f26;
   padding-bottom: 6px;
+  gap: 6px 10px;
+  flex-wrap: wrap;
 }
 
 .boot-logo {
   font-weight: 800;
   letter-spacing: 4px;
-  font-size: 18px;
+  font-size: clamp(17px, 4vw, 20px);
   color: #2aff7a;
 }
 
 .boot-meta {
-  font-size: 12px;
+  font-size: clamp(11px, 3vw, 13px);
   color: #3fbf79;
   text-transform: uppercase;
 }
 
 .boot-body {
-  min-height: 120px;
+  min-height: clamp(96px, 24vw, 120px);
   display: grid;
-  gap: 6px;
-  margin-bottom: 14px;
-  font-size: 15px;
+  gap: clamp(4px, 1.6vw, 8px);
+  margin-bottom: clamp(10px, 3vw, 14px);
+  font-size: clamp(13px, 3vw, 15px);
   letter-spacing: 0.5px;
 }
 
 .boot-line {
   color: #6df78e;
-  font-size: 14px;
+  font-size: clamp(12px, 3vw, 14px);
 }
 
 .boot-cursor {
@@ -230,12 +239,12 @@ select {
 
 .boot-progress {
   width: 100%;
-  height: 14px;
+  height: clamp(12px, 3vw, 16px);
   background: #001b00;
   border: 1px solid #2aff7a;
   padding: 2px;
   box-shadow: inset 0 0 12px rgba(0, 255, 128, 0.15);
-  margin-bottom: 10px;
+  margin-bottom: clamp(10px, 3vw, 14px);
 }
 
 .boot-progress-bar {
@@ -263,12 +272,28 @@ select {
   text-transform: uppercase;
   letter-spacing: 0.6px;
   transition: background 120ms ease, color 120ms ease, transform 120ms ease;
+  width: fit-content;
 }
 
 .boot-skip:hover {
   background: rgba(0, 255, 128, 0.16);
   color: #2aff7a;
   transform: translateY(-1px);
+}
+
+@media (max-width: 540px) {
+  .boot-card {
+    width: 90%;
+  }
+
+  .boot-header {
+    align-items: flex-start;
+  }
+
+  .boot-skip {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 @keyframes boot-sweep {

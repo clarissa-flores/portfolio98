@@ -2,16 +2,24 @@
   const BOOT_SEEN_KEY = 'clarissa-boot-seen';
   const MIN_DURATION = 1600;
   const MAX_DURATION = 2600;
+  let notified = false;
 
   const el = document.querySelector('[data-boot-screen]');
   const bar = document.querySelector('[data-boot-progress]');
   const skip = document.querySelector('[data-boot-skip]');
   if (!el || !bar) return;
 
+  const markReady = () => {
+    if (notified) return;
+    notified = true;
+    document.body.classList.add('boot-ready');
+    document.body.dispatchEvent(new CustomEvent('boot:ready'));
+  };
+
   const shouldSkip = sessionStorage.getItem(BOOT_SEEN_KEY) === 'true';
   if (shouldSkip) {
     el.remove();
-    document.body.classList.add('boot-ready');
+    markReady();
     return;
   }
 
@@ -33,7 +41,7 @@
     if (done) return;
     done = true;
     sessionStorage.setItem(BOOT_SEEN_KEY, 'true');
-    document.body.classList.add('boot-ready');
+    markReady();
     el.dataset.active = 'false';
     setTimeout(() => el.remove(), 400);
   };

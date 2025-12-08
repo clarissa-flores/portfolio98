@@ -279,6 +279,7 @@ const PET_IMAGES = {
       const wallpaperModeSelect = panel.querySelector('[data-setting="wallpaper-mode"]');
       const wallpaperPosSelect = panel.querySelector('[data-setting="wallpaper-position"]');
       const nekoToggle = panel.querySelector('[data-setting="neko"]');
+      const clippyToggle = panel.querySelector('[data-setting="clippy"]');
       const saveBtn = panel.querySelector('[data-settings-save]');
       const wallpaperHelp = panel.querySelector('[data-wallpaper-help]');
       const resetBtn = panel.querySelector('[data-settings-reset]');
@@ -341,6 +342,13 @@ const PET_IMAGES = {
           window.__settings?.applySetting?.('neko', currentSettings.neko);
         });
       }
+      if (clippyToggle) {
+        clippyToggle.checked = Boolean(currentSettings.clippy);
+        clippyToggle.addEventListener('change', () => {
+          currentSettings.clippy = clippyToggle.checked;
+          window.__settings?.applySetting?.('clippy', currentSettings.clippy);
+        });
+      }
       if (saveBtn) {
         saveBtn.addEventListener('click', () => window.__settings?.saveSettings(currentSettings));
       }
@@ -354,6 +362,7 @@ const PET_IMAGES = {
           if (bgColorInput) bgColorInput.value = defaults.bgColor ?? '#008080';
           if (cursorSelect) cursorSelect.value = defaults.cursor ?? 'auto';
           if (nekoToggle) nekoToggle.checked = Boolean(defaults.neko);
+          if (clippyToggle) clippyToggle.checked = Boolean(defaults.clippy);
           window.__settings?.saveSettings(currentSettings);
           syncWallpaperHelp();
           syncWallpaperModeState();

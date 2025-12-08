@@ -4,6 +4,7 @@ export const SETTINGS_DEFAULTS = {
   bgColor: '#008080',
   cursor: 'auto',
   neko: false,
+  clippy: true,
   theme: '/os-gui/windows-98.css'
 };
 
@@ -87,6 +88,15 @@ export const applySetting = (key, value) => {
         removeNeko();
       }
       break;
+    case 'clippy':
+      if (value) {
+        window.__clippyPreload = true;
+        window.__clippyToggle?.enable?.();
+      } else {
+        window.__clippyPreload = false;
+        window.__clippyToggle?.disable?.();
+      }
+      break;
     default:
       break;
   }
@@ -100,6 +110,7 @@ export const applyAllSettings = (settings) => {
   applySetting('bg-color', merged.bgColor);
   applySetting('cursor', merged.cursor);
   applySetting('neko', merged.neko);
+  applySetting('clippy', merged.clippy);
   return merged;
 };
 
