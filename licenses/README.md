@@ -6,4 +6,3 @@
 
 Other notes:
 - JSPaint is loaded remotely from https://jspaint.app (not bundled locally).
-- WinBox is no longer used.

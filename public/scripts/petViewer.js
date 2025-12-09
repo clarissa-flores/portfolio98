@@ -75,7 +75,8 @@ export function setupPetViewer(root, config) {
     happiness: 60,
     seen: new Set(),
     uniqueCount: 0,
-    photoViews: new Map()
+    photoViews: new Map(),
+    started: false
   };
 
   if (!state.images.length) {
@@ -87,8 +88,15 @@ export function setupPetViewer(root, config) {
     photo: root.querySelector('[data-pet-photo]'),
     rareFlag: root.querySelector('[data-rare-flag]'),
     photoIndex: root.querySelector('[data-photo-index]'),
-    viewCount: root.querySelector('[data-view-count]')
+    viewCount: root.querySelector('[data-view-count]'),
+    loader: root.querySelector('[data-pet-loader]'),
+    loaderBar: root.querySelector('[data-pet-progress]'),
+    loaderText: root.querySelector('[data-pet-loader-text]'),
+    loaderBtn: root.querySelector('[data-pet-launch]'),
+    content: root.querySelector('[data-pet-content]'),
+    menubar: root.querySelector('[data-pet-menubar]')
   };
+  const initialWindowEl = root.closest('.window, .os-window');
 
   const buildQueue = () => {
     if (!state.queue.length) {
@@ -250,6 +258,67 @@ export function setupPetViewer(root, config) {
     host.appendChild(bar.element || bar);
   };
 
+  const spawnViewerWindow = () => {
+    const ctor = window.$Window;
+    if (typeof ctor !== 'function') return null;
+    const key = `pet-viewer-${state.pet}`;
+    const icon = state.pet === 'bunny' ? '/assets/icons/bunny.png' : state.pet === 'hazel' ? '/assets/icons/hazel.png' : '/assets/icons/bunny.png';
+    const openMap = window.__osOpenMap || (window.__osOpenMap = {});
+    const existing = openMap[key];
+    if (existing && existing.element && document.body.contains(existing.element)) {
+      existing.bringToFront?.();
+      existing.focus?.();
+      return existing;
+    }
+
+    const $w = ctor({
+      title: `${state.petLabel}.exe`,
+      resizable: true,
+      minimizable: true,
+      maximizable: true,
+      width: 720,
+      height: 520
+    });
+    if ($w?.element) {
+      $w.element.classList.add('os-window');
+      $w.element.dataset.winId = key;
+      const contentEl = $w.element.querySelector('.window-content') || $w.element;
+      if (contentEl) {
+        contentEl.innerHTML = '';
+        contentEl.appendChild(root);
+        root.tabIndex = -1;
+        root.focus?.();
+      }
+      $w.center?.();
+      $w.bringToFront?.();
+      $w.focus?.();
+    }
+
+    if (typeof $w.onClosed === 'function') {
+      $w.onClosed(() => {
+        delete openMap[key];
+        document.dispatchEvent(new CustomEvent('winbox:closed', { detail: { key } }));
+      });
+    }
+    if (typeof $w.onFocus === 'function') {
+      $w.onFocus(() => {
+        document.dispatchEvent(new CustomEvent('winbox:focused', { detail: { key } }));
+      });
+    }
+    if (typeof $w.onBlur === 'function') {
+      $w.onBlur(() => {
+        document.dispatchEvent(new CustomEvent('winbox:blurred', { detail: { key } }));
+      });
+    }
+
+    openMap[key] = $w;
+    document.dispatchEvent(new CustomEvent('winbox:opened', {
+      detail: { key, title: `${state.petLabel}.exe`, icon, win: $w }
+    }));
+    document.dispatchEvent(new CustomEvent('winbox:focused', { detail: { key, win: $w } }));
+    return $w;
+  };
+
   root.addEventListener('click', (event) => {
     const action = event.target.closest('[data-pet-action]');
     if (!action) return;
@@ -294,9 +363,64 @@ export function setupPetViewer(root, config) {
 
   renderHappiness(root, state.happiness);
   renderRarity(root, state.rarityChance);
-  nextPhoto({ forceRare: false });
   buildMenuBar();
-  setStatusLine(root, 'Pet Viewer 2.0 ready.');
+  if (refs.menubar) refs.menubar.hidden = true;
+
+  const startViewer = () => {
+    if (state.started) return;
+    state.started = true;
+    if (refs.loader) refs.loader.remove();
+    if (refs.content) refs.content.hidden = false;
+    if (refs.menubar) refs.menubar.hidden = false;
+    const newWin = spawnViewerWindow();
+    if (!newWin) {
+      if (refs.loader && refs.loader.parentElement !== root) {
+        refs.loader.remove();
+      }
+    } else if (initialWindowEl && initialWindowEl !== newWin.element) {
+      const maybeClose =
+        initialWindowEl.$window?.close ||
+        initialWindowEl.close ||
+        initialWindowEl.$win?.close;
+      if (typeof maybeClose === 'function') {
+        maybeClose.call(initialWindowEl.$window || initialWindowEl.$win || initialWindowEl);
+      } else {
+        initialWindowEl.remove?.();
+      }
+    }
+    nextPhoto({ forceRare: false });
+    setStatusLine(root, 'Pet Viewer 2.0 ready.');
+  };
+
+  const runLoader = () => {
+    if (!refs.loader || !refs.loaderBar) {
+      startViewer();
+      return;
+    }
+    let progress = 0;
+    const render = () => {
+      refs.loaderBar.style.width = `${progress}%`;
+      if (refs.loaderText) {
+        refs.loaderText.textContent = progress >= 100
+          ? `${state.petLabel} ready!`
+          : `Initializing ${state.petLabel}... ${progress}%`;
+      }
+    };
+    render();
+    const tick = () => {
+      progress = Math.min(100, progress + 5);
+      render();
+      if (progress >= 100) {
+        clearInterval(timer);
+        if (refs.loaderBtn) refs.loaderBtn.hidden = false;
+        if (refs.loaderBtn) refs.loaderBtn.focus?.();
+      }
+    };
+    const timer = setInterval(tick, 100);
+    refs.loaderBtn?.addEventListener('click', startViewer, { once: true });
+  };
+
+  runLoader();
 
   return {
     next: nextPhoto,

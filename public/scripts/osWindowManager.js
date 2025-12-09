@@ -82,15 +82,15 @@ export const OS_WINDOWS = {
     title: 'Bunny.exe',
     url: '/bunny',
     icon: '/assets/icons/bunny.png',
-    width: 720,
-    height: 520
+    width: 380,
+    height: 180
   },
   hazelWin: {
     title: 'Hazel.exe',
     url: '/hazel',
     icon: '/assets/icons/hazel.png',
-    width: 720,
-    height: 520
+    width: 380,
+    height: 180
   },
   bin: {
     title: 'Recycle Bin',

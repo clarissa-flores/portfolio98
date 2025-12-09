@@ -1,45 +1,5 @@
-<section class="window-body pet-viewer" data-pet-viewer="bunny">
-  <div class="pet-menubar-shell" data-pet-menubar aria-label="Bunny menu bar"></div>
+---
+import PetViewer from '../components/PetViewer.astro';
+---
 
-  <div class="pet-viewer-grid">
-    <div class="pet-photo-card">
-      <div class="pet-photo-frame">
-        <img data-pet-photo alt="Bunny photo" loading="lazy" />
-        <div class="pet-rare-flag" data-rare-flag hidden>Rare cameo!</div>
-      </div>
-      <div class="pet-photo-meta">
-        <span data-photo-index>Photo 0 / 0</span>
-        <span data-photo-rarity>Rarity chance: --</span>
-        <span data-view-count>Viewed 0 times</span>
-      </div>
-    </div>
-
-    <aside class="pet-side-panel">
-      <div class="pet-meter">
-        <div class="pet-meter-label">Happiness Meter</div>
-        <div class="pet-meter-bar" role="presentation">
-          <span class="pet-meter-fill" data-happy-bar style="width: 50%;"></span>
-        </div>
-        <div class="pet-meter-status" data-happy-label>Warming up...</div>
-      </div>
-
-      <div class="pet-action-row">
-        <button type="button" data-pet-action="pet">Pet</button>
-        <button type="button" data-pet-action="treat">Give Treat</button>
-      </div>
-      <div class="pet-action-row">
-        <button type="button" data-pet-action="prev">Previous Photo</button>
-        <button type="button" data-pet-action="next">Next Photo</button>
-      </div>
-    </aside>
-  </div>
-
-  <footer class="pet-footer">
-    <div class="pet-status-line" data-status-line>Loading bunny photos...</div>
-    <div class="pet-rarity-controls">
-      <span class="pet-rarity-label">Lucky Meter</span>
-      <button type="button" data-pet-action="toggle-rare">Lucky Mode</button>
-      <button type="button" data-pet-action="reset-chance">Reset</button>
-    </div>
-  </footer>
-</section>
+<PetViewer petKey="bunny" petLabel="Bunny" />
