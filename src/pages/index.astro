@@ -31,6 +31,7 @@ const OS_WINDOWS_IMPORT = '/scripts/osWindowManager.js';
 const SETTINGS_IMPORT = '/scripts/settings.js';
 const CONSOLE_IMPORT = '/scripts/console.js';
 const BLOG_IMPORT = '/scripts/blogWindows.js';
+const PET_VIEWER_IMPORT = '/scripts/petViewer.js';
 
 let settingsModule = null;
 let currentSettings = {};
@@ -80,9 +81,26 @@ const PET_IMAGES = {
   hazel: [
     '/assets/hazel/IMG_3694.jpg','/assets/hazel/IMG_3440.jpg','/assets/hazel/IMG_2559.jpg','/assets/hazel/IMG_3727.jpg',
     '/assets/hazel/IMG_7055.jpg','/assets/hazel/IMG_6820.jpg','/assets/hazel/IMG_6997.jpg','/assets/hazel/IMG_6158.jpg',
-    '/assets/hazel/IMG_6761.jpg','/assets/hazel/IMG_6751.jpg','/assets/hazel/IMG_6820 2.jpg','/assets/hazel/IMG_2492.jpg',
+    '/assets/hazel/IMG_6761.jpg','/assets/hazel/IMG_6751.jpg','/assets/hazel/IMG_7958.jpeg','/assets/hazel/IMG_2492.jpg',
     '/assets/hazel/big_stretch.jpg','/assets/hazel/IMG_6754.jpg','/assets/hazel/IMG_6875.jpg','/assets/hazel/IMG_3739.jpg'
   ]
+};
+const RARE_PET_IMAGES = [
+  '/assets/rare/IMG_6987.jpeg',
+  '/assets/rare/IMG_7931.jpeg'
+];
+const RARE_PET_CHANCE = 0.07;
+
+let petViewerModule = null;
+const loadPetViewerModule = async () => {
+  if (petViewerModule) return petViewerModule;
+  try {
+    petViewerModule = await import(PET_VIEWER_IMPORT);
+    return petViewerModule;
+  } catch (err) {
+    console.error('Failed to load pet viewer', err);
+    return null;
+  }
 };
 
 // swap desktop icon images on hover/focus if data-hover-icon is provided
@@ -186,66 +204,20 @@ const PET_IMAGES = {
     event.preventDefault();
     openFileWindow(target.dataset.fileName, target.dataset.fileSrc);
   });
-
-  // Open random pet photo
-  window.__openPet = (pet) => {
-    const list = PET_IMAGES[pet];
-    if (!list?.length) return;
-
-    window.__petQueue = window.__petQueue || {};
-    if (!window.__petQueue[pet] || window.__petQueue[pet].length === 0) {
-      // Refill a shuffled queue so we don't repeat until we've cycled through all images
-      window.__petQueue[pet] = [...list].sort(() => Math.random() - 0.5);
-    }
-    const queue = window.__petQueue[pet];
-    const choice = queue.pop();
-    const filename = choice.split('/').pop() || 'photo';
-    const displayName = `${pet === 'bunny' ? 'Bunny' : 'Hazel'} - ${filename}`;
-    const icon = pet === 'bunny' ? '/assets/icons/bunny.png' : '/assets/icons/hazel.png';
-    openFileWindow(displayName, choice, icon);
-  };
-
-  const startPetLoader = (root, pet) => {
-    if (!root || root.dataset.petLoaderStarted) return;
-    root.dataset.petLoaderStarted = 'true';
-    const bar = root.querySelector('[data-pet-progress]');
-    const button = root.querySelector('[data-pet-launch]');
-    if (!bar) return;
-    let progress = 0;
-    const render = () => {
-      bar.style.width = `${progress}%`;
-    };
-    render();
-    const tick = () => {
-      progress = Math.min(100, progress + 5);
-      render();
-      if (progress >= 100) {
-        clearInterval(timer);
-        if (button) button.hidden = false;
-      }
-    };
-    const timer = setInterval(tick, 100);
-    button?.addEventListener('click', () => {
-      if (window.__openPet) {
-        window.__openPet(pet);
-      }
+  
+  const initPetViewer = async (win, pet) => {
+    const mod = await loadPetViewerModule();
+    if (!mod?.setupPetViewer) return;
+    const root =
+      win?.body?.querySelector?.(`[data-pet-viewer="${pet}"]`) ||
+      getWinBody(win)?.querySelector?.(`[data-pet-viewer="${pet}"]`);
+    if (!root) return;
+    mod.setupPetViewer(root, {
+      pet,
+      images: PET_IMAGES[pet] || [],
+      rareImages: RARE_PET_IMAGES,
+      rarityChance: RARE_PET_CHANCE
     });
-  };
-
-  const initPetLoader = (win, pet) => {
-    let attempts = 0;
-    const attempt = () => {
-      const root =
-        win?.body?.querySelector?.(`[data-pet-loader="${pet}"]`) ||
-        getWinBody(win)?.querySelector?.(`[data-pet-loader="${pet}"]`);
-      if (!root && attempts < 20) {
-        attempts += 1;
-        setTimeout(attempt, 50);
-        return;
-      }
-      if (root) startPetLoader(root, pet);
-    };
-    attempt();
   };
 
   const getWinBody = (win) =>
@@ -381,10 +353,10 @@ const PET_IMAGES = {
       consoleModulePromise.then((mod) => mod?.initConsoleWindow?.(detail.win));
     }
     if (detail.key === 'bunnyWin' && detail.win) {
-      initPetLoader(detail.win, 'bunny');
+      initPetViewer(detail.win, 'bunny');
     }
     if (detail.key === 'hazelWin' && detail.win) {
-      initPetLoader(detail.win, 'hazel');
+      initPetViewer(detail.win, 'hazel');
     }
   });
 });

@@ -1,3 +1,5 @@
+import { ClippyBrain } from './clippy-brain.js';
+
 export const SETTINGS_DEFAULTS = {
   wallpaper: "url('/assets/wallpapers/clouds.jpeg')",
   wallpaperMode: 'cover',
@@ -42,6 +44,7 @@ export const applySetting = (key, value) => {
   switch (key) {
     case 'wallpaper':
       root.setProperty('--wallpaper', value);
+      ClippyBrain.onSettingsChange();
       break;
     case 'theme':
       document.querySelectorAll('link[href*="/os-gui/"]').forEach((el) => {
@@ -49,6 +52,7 @@ export const applySetting = (key, value) => {
           el.href = value;
         }
       });
+      ClippyBrain.onSettingsChange();
       break;
     case 'wallpaper-mode':
       switch (value) {
@@ -71,12 +75,15 @@ export const applySetting = (key, value) => {
         default:
           break;
       }
+      ClippyBrain.onSettingsChange();
       break;
     case 'wallpaper-position':
       root.setProperty('--wallpaper-position', value);
+      ClippyBrain.onSettingsChange();
       break;
     case 'bg-color':
       root.setProperty('--bg-color', value);
+      ClippyBrain.onSettingsChange();
       break;
     case 'cursor':
       root.setProperty('--cursor', value);

@@ -1,3 +1,5 @@
+import { ClippyBrain } from './clippy-brain.js';
+
 (() => {
   const setup = () => {
     const toggle = document.querySelector('[data-start-toggle]');
@@ -56,18 +58,21 @@
     };
 
     const restartSession = () => {
-      try {
-        localStorage.clear();
-      } catch {
-        /* ignore */
-      }
-      try {
-        sessionStorage?.clear?.();
-      } catch {
-        /* ignore */
-      }
-      closeAll();
-      window.location.reload();
+      ClippyBrain.onLogoff();
+      setTimeout(() => {
+        try {
+          localStorage.clear();
+        } catch {
+          /* ignore */
+        }
+        try {
+          sessionStorage?.clear?.();
+        } catch {
+          /* ignore */
+        }
+        closeAll();
+        window.location.reload();
+      }, 1200);
     };
 
     let desktopHidden = false;

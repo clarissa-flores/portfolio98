@@ -1,3 +1,5 @@
+import { ClippyBrain } from './clippy-brain.js';
+
 (() => {
   const PATH = '/vendor/clippy/agents/';
   window.CLIPPY_CDN = PATH;
@@ -76,8 +78,10 @@
             'Clippy',
             (agent) => {
               agent.show();
+              ClippyBrain.setAgent(agent);
               agent.animate?.();
               agent.play?.('Greeting');
+              ClippyBrain.onBoot();
               resolve(agent);
             },
             undefined,
@@ -139,10 +143,25 @@
         } else {
           agent.animate?.();
         }
-        agent.speak?.('Try double-clicking an icon to open it.');
+        ClippyBrain.showBasicTip();
       });
-    }, 1200);
+    }, 1000);
   };
+
+  const APP_MAP = {
+    solitaire: 'solitaire',
+    paint: 'paint',
+    bunny: 'bunny',
+    hazel: 'hazel',
+    settings: 'settings'
+  };
+
+  document.addEventListener('winbox:opened', (event) => {
+    const key = event.detail?.key;
+    if (!key) return;
+    const app = APP_MAP[key];
+    if (app) ClippyBrain.onAppOpen(app);
+  });
 
   // If settings were applied before this script loaded, honor them now.
   if (window.__clippyPreload === true) {
